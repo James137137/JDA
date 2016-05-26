@@ -25,3 +25,6 @@ tokens.json
 *.iml
 *.ipr
 *.iws
+
+# maven
+/target/
