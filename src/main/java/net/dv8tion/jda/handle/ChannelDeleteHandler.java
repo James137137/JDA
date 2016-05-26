@@ -24,7 +24,6 @@ import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.events.channel.voice.VoiceChannelDeleteEvent;
-import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
@@ -87,12 +86,6 @@ public class ChannelDeleteHandler extends SocketHandler
                     throw new IllegalArgumentException("CHANNEL_DELETE attempted to delete a channel that doesn't exist! JSON: " + content);
 
                 //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
-                AudioManager manager = api.getAudioManagersMap().get(guild);
-                if (manager != null && manager.isConnected()
-                        && manager.getConnectedChannel().getId().equals(channel.getId()))
-                {
-                    manager.closeAudioConnection();
-                }
                 guild.getVoiceChannelsMap().remove(channel.getId());
                 api.getEventManager().handle(
                         new VoiceChannelDeleteEvent(

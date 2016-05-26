@@ -25,9 +25,7 @@ import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.hooks.InterfacedEventManager;
 import net.dv8tion.jda.hooks.SubscribeEvent;
 import net.dv8tion.jda.managers.AccountManager;
-import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.GuildManager;
-import net.dv8tion.jda.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.requests.Requester;
 import net.dv8tion.jda.requests.WebSocketClient;
 import net.dv8tion.jda.utils.SimpleLog;
@@ -60,7 +58,6 @@ public class JDAImpl implements JDA
     private final Map<String, VoiceChannel> voiceChannelMap = new HashMap<>();
     private final Map<String, PrivateChannel> pmChannelMap = new HashMap<>();
     private final Map<String, String> offline_pms = new HashMap<>();    //Userid -> channelid
-    private final Map<Guild, AudioManager> audioManagers = new HashMap<>();
     private final boolean audioEnabled;
     private IEventManager eventManager = new InterfacedEventManager();
     private SelfInfo selfInfo = null;
@@ -75,10 +72,8 @@ public class JDAImpl implements JDA
     public JDAImpl(boolean enableAudio)
     {
         proxy = null;
-        if (enableAudio)
-            this.audioEnabled = AudioManagerImpl.init();
-        else
-            this.audioEnabled = false;
+        this.audioEnabled = false;
+            
     }
 
     public JDAImpl(String proxyUrl, int proxyPort, boolean enableAudio)
@@ -87,10 +82,8 @@ public class JDAImpl implements JDA
             throw new IllegalArgumentException("The provided proxy settings cannot be used to make a proxy. Settings: URL: '" + proxyUrl + "'  Port: " + proxyPort);
         proxy = new HttpHost(proxyUrl, proxyPort);
         Unirest.setProxy(proxy);
-        if (enableAudio)
-            this.audioEnabled = AudioManagerImpl.init();
-        else
-            this.audioEnabled = false;
+        this.audioEnabled = false;
+            
     }
 
     /**
@@ -344,11 +337,6 @@ public class JDAImpl implements JDA
         return offline_pms;
     }
 
-    public Map<Guild, AudioManager> getAudioManagersMap()
-    {
-        return audioManagers;
-    }
-
     @Override
     public SelfInfo getSelfInfo()
     {
@@ -419,7 +407,6 @@ public class JDAImpl implements JDA
     @Override
     public void shutdown(boolean free)
     {
-        audioManagers.values().forEach(mng -> mng.closeAudioConnection());
         client.setAutoReconnect(false);
         client.close();
         authToken = null; //make further requests fail
@@ -445,21 +432,6 @@ public class JDAImpl implements JDA
             this.messageLimit = null;
         }
         return this.messageLimit;
-    }
-
-    @Override
-    public synchronized AudioManager getAudioManager(Guild guild)
-    {
-        if (!audioEnabled)
-            throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
-
-        AudioManager manager = audioManagers.get(guild);
-        if (manager == null)
-        {
-            manager = new AudioManagerImpl(guild);
-            audioManagers.put(guild, manager);
-        }
-        return manager;
     }
 
     private static class AsyncCallback implements EventListener

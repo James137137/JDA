@@ -19,7 +19,6 @@ import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.hooks.IEventManager;
 import net.dv8tion.jda.managers.AccountManager;
-import net.dv8tion.jda.managers.AudioManager;
 import org.apache.http.HttpHost;
 
 import java.util.List;
@@ -256,18 +255,6 @@ public interface JDA
      *      The AccountManager for the currently logged in account.
      */
     AccountManager getAccountManager();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.managers.AccountManager AudioManager} for this {@link net.dv8tion.jda.JDA JDA}
-     * instance. AudioManager deals with creating, managing and severing audio connections to
-     * {@link net.dv8tion.jda.entities.VoiceChannel VoiceChannels}.
-     *
-     * @param guild
-     *          The {@link net.dv8tion.jda.entities.Guild Guild} whose AudioManager you wish to retrieve.
-     * @return
-     *      The AudioManager for this JDA instance.
-     */
-    AudioManager getAudioManager(Guild guild);
 
     /**
      * This value is the total amount of JSON responses that discord has sent.<br>

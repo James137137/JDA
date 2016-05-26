@@ -23,7 +23,6 @@ import net.dv8tion.jda.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.exceptions.PermissionException;
 import net.dv8tion.jda.exceptions.VerificationLevelException;
 import net.dv8tion.jda.handle.EntityBuilder;
-import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
@@ -267,12 +266,6 @@ public class GuildImpl implements Guild
         if (manager == null)
             manager = new GuildManager(this);
         return manager;
-    }
-
-    @Override
-    public synchronized AudioManager getAudioManager()
-    {
-        return api.getAudioManager(this);
     }
 
     @Override

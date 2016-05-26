@@ -17,12 +17,9 @@ package net.dv8tion.jda.handle;
 
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.impl.GuildImpl;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.events.guild.GuildUnavailableEvent;
-import net.dv8tion.jda.managers.AudioManager;
 import net.dv8tion.jda.requests.GuildLock;
 import org.json.JSONObject;
 
@@ -47,20 +44,6 @@ public class GuildLeaveHandler extends SocketHandler
         }
 
         Guild guild = api.getGuildMap().get(content.getString("id"));
-        AudioManager manager = api.getAudioManagersMap().get(guild);
-        if (manager != null)
-            manager.closeAudioConnection();
-        if (content.has("unavailable") && content.getBoolean("unavailable"))
-        {
-            ((GuildImpl) guild).setAvailable(false);
-            api.getEventManager().handle(
-                    new GuildUnavailableEvent(api, responseNumber, guild)
-            );
-            return null;
-        }
-
-        if (manager != null)
-            api.getAudioManagersMap().remove(guild);
 
         //cleaning up all users that we do not share a guild with anymore
         List<User> users = guild.getUsers();
